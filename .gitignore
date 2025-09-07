@@ -1,10 +1,55 @@
-node_modules
 .yarn
 logs
 *.log
+webroot
+
+# --- OS / Editor ---
+.DS_Store
+.idea/
+*.iml
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# --- Cursor IDE ---
+.cursor/
+
+# --- Node / TS ---
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.DS_Store
-webroot
-dist
+pnpm-debug.log*
+.eslintcache
+.nyc_output/
+coverage/
+coverage-*
+dist/
+build/
+out/
+.tmp/
+.cache/
+.vite/
+.turbo/
+storybook-static/
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+.node_repl_history
+
+# --- Devvit (if generated) ---
+.devvit/
+.devvit-cache/
+devvit.lock
+
+# --- Env & secrets (keep sample) ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.keystore
+*.jks
+service-account*.json
