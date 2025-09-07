@@ -2,6 +2,8 @@
 
 A Reddit daily racing game where the community competes in teams for the highest karma each day. Race against the clock, collect upvotes, avoid downvotes, and see how your team stacks up!
 
+<img width="2144" height="256" alt="karma kart banner" src="https://github.com/user-attachments/assets/2d0eb360-f967-4743-821c-85ecf5198ff2" />
+
 ## Features
 - **Daily Track:** Each day generates a unique race track based on the subreddit seed.
 - **Reddit Avatars:** Your car is your Reddit profile picture (Snoovatar).
