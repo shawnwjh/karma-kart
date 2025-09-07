@@ -1,31 +1,25 @@
-## Devvit React Starter
+# Karma Kart
 
-A starter to build web applications on Reddit's developer platform
+A Reddit daily racing game where the community competes in teams for the highest karma each day. Race against the clock, collect upvotes, avoid downvotes, and see how your team stacks up!
 
-- [Devvit](https://developers.reddit.com/): A way to build and deploy immersive games on Reddit
-- [Vite](https://vite.dev/): For compiling the webView
-- [React](https://react.dev/): For UI
-- [Express](https://expressjs.com/): For backend logic
-- [Tailwind](https://tailwindcss.com/): For styles
-- [Typescript](https://www.typescriptlang.org/): For type safety
+## Features
+- **Daily Track:** Each day generates a unique race track based on the subreddit seed.
+- **Reddit Avatars:** Your car is your Reddit profile picture (Snoovatar).
+- **Upvotes & Downvotes:** Collect upvotes for points, avoid downvotes!
+- **Timer:** Each race lasts 1 minute. Try to collect as many upvotes as possible before time runs out.
+- **Finish Line:** Cross the finish line to respawn pickups and keep racing for more points.
+- **Teams:** Compete as part of your subreddit team for daily glory.
+- **No Pausing:** Once the timer starts, you can't stop!
 
-## Getting Started
+## How to Play
+1. **Start the Game:** Click the play button on the start screen.
+2. **Race:** On Desktop: Use arrow keys or A/D. On Mobile: Use touch controls.
+3. **Collect Upvotes:** Drive over upvote pickups to increase your score. Avoid downvotes!
+4. **Finish Line:** Cross the finish line to respawn pickups and keep collecting.
+5. **Timer:** When the timer ends, your score is submitted for the day.
+6. **End Screen:** See your results and get ready for tomorrow's race!
 
-> Make sure you have Node 22 downloaded on your machine before running!
-
-1. Run `npm create devvit@latest --template=react`
-2. Go through the installation wizard. You will need to create a Reddit account and connect it to Reddit developers
-3. Copy the command on the success page into your terminal
-
-## Commands
-
-- `npm run dev`: Starts a development server where you can develop your application live on Reddit.
-- `npm run build`: Builds your client and server projects
-- `npm run deploy`: Uploads a new version of your app
-- `npm run launch`: Publishes your app for review
-- `npm run login`: Logs your CLI into Reddit
-- `npm run check`: Type checks, lints, and prettifies your app
-
-## Cursor Integration
-
-This template comes with a pre-configured cursor environment. To get started, [download cursor](https://www.cursor.com/downloads) and enable the `devvit-mcp` when prompted.
+## Tech Stack
+- React + TypeScript (client)
+- Express + Devvit Reddit API (server)
+- Canvas-based rendering for smooth gameplay
