@@ -95,6 +95,34 @@ export function RaceCanvas({ track, username, onRunEnd }: Props) {
   // Build pickups from track data
   const pickupsRef = useRef<PickupExt[]>([]);
   
+  // Reset game state when component mounts or remounts
+  useEffect(() => {
+    const initialState = {
+      pos: {...(track.center[0] || { x: 0, y: 0 })},
+      heading: track.center[0] && track.center[1] ? Math.atan2(
+        track.center[1].y - track.center[0].y,
+        track.center[1].x - track.center[0].x
+      ) : 0,
+      speed: 0,
+      idxHint: 0,
+      keys: { left: false, right: false },
+      lastTs: 0,
+      timerMs: GAME.TIMER_MS,
+      running: true,
+      up: 0,
+      down: 0,
+      distance: 0,
+      wallLock: false,
+      wallSign: 0 as const,
+      relaunchBoostMs: 0,
+      laps: 0,
+      trackProgress: 0,
+      lastFinishLineTime: 0
+    };
+    
+    stateRef.current = initialState;
+  }, [track]);
+  
   useEffect(() => {
     // Initialize pickups from track data
     const newPickups: PickupExt[] = [];
