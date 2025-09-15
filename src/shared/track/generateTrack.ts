@@ -15,19 +15,19 @@ export function generateTrack(subreddit:string, opts?:{
   upsEveryMeters?: number; downsPer100m?: number;
 }): TrackData {
   const {
-    radius=200, spacing=3, baseWidth=35, widthAmp=8, // Much wider track and larger radius
+    radius=220, spacing=2, baseWidth=50, widthAmp=10, // Tighter spacing for smoother curves
     upsEveryMeters=22, downsPer100m=3
   } = opts || {};
   const seedStr = dailySeed(subreddit);
   const [a,b,c,d] = cyrb128(seedStr);
   const rnd = sfc32(a,b,c,d);
 
-  // 1) rough loop of control points around a circle - more points for complexity
-  const CTRL = 16 + Math.floor(rnd()*8); // 16–23 points (much more complex)
+  // 1) rough loop of control points around a circle - fewer points for smoother curves
+  const CTRL = 8 + Math.floor(rnd()*4); // 8–11 points (much smoother)
   const controls:Vec2[] = [];
   for (let i=0;i<CTRL;i++) {
-    const t = (i/CTRL)*Math.PI*2 + rnd()*0.3; // reduced jitter to prevent overlap
-    const r = radius * (0.8 + rnd()*0.4);     // tighter radius variation to prevent crossing
+    const t = (i/CTRL)*Math.PI*2 + rnd()*0.1; // much less jitter for smoother curves
+    const r = radius * (0.9 + rnd()*0.2);     // less radius variation for consistent curves
     controls.push({ x: Math.cos(t)*r, y: Math.sin(t)*r });
   }
 
@@ -39,9 +39,9 @@ export function generateTrack(subreddit:string, opts?:{
   const noise = makeValueNoise1D(rnd);
   const width = center.map((_, i) => {
     const t = i / center.length;
-    // More controlled width variation to maintain lane separation
-    const widthVariation = widthAmp * noise(t*4) * 0.7; // reduced amplitude
-    return Math.max(baseWidth * 0.8, baseWidth + widthVariation); // ensure minimum width
+    // Very smooth width variation to prevent jarring changes
+    const widthVariation = widthAmp * noise(t*2) * 0.4; // much lower frequency and amplitude
+    return Math.max(baseWidth * 0.9, baseWidth + widthVariation); // less variation range
   });
 
   // 4) scatter pickups

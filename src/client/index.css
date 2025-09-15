@@ -8,7 +8,8 @@
 }
 
 body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Rajdhani', 'Arial Black', Impact, sans-serif;
+  font-weight: 600;
   overflow: hidden;
   user-select: none;
   -webkit-user-select: none;
@@ -23,6 +24,49 @@ html, body, #root {
   padding: 0;
 }
 
+/* Racing-themed font classes */
+.racing-title {
+  font-family: 'Orbitron', 'Arial Black', Impact, sans-serif;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.racing-subtitle {
+  font-family: 'Orbitron', 'Arial Black', Impact, sans-serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.racing-text {
+  font-family: 'Rajdhani', 'Arial Black', Impact, sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Start screen backgrounds: use images placed in the public folder at /start-screen.jpg and /start-screen-mobile.jpg */
+.start-screen {
+  color: white;
+  font-family: 'Rajdhani', 'Arial Black', Impact, sans-serif;
+  font-weight: 600;
+  /* Fast-loading gradient fallback that shows immediately */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  /* Image loads on top of the gradient */
+  background-image: url('/start-screen.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+/* Mobile-specific background override for start screen */
+@media (max-width: 640px) {
+  .start-screen {
+    background-image: url('/start-screen-mobile.png');
+    background-position: center top;
+  }
+}
+
 /* Button hover effects */
 button {
   font-family: inherit;
@@ -34,4 +78,69 @@ canvas {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+
+/* Loading screen with spinning animation */
+.loading-screen {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-family: 'Rajdhani', 'Arial Black', Impact, sans-serif;
+  font-weight: 600;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-image: url('/start-screen.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Mobile background for loading screen */
+@media (max-width: 640px) {
+  .loading-screen {
+    background-image: url('/start-screen-mobile.png');
+    background-position: center top;
+  }
+}
+
+/* Spinning loading circle */
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* End screen backgrounds: same as start screen */
+.end-screen {
+  color: white;
+  font-family: 'Rajdhani', 'Arial Black', Impact, sans-serif;
+  font-weight: 600;
+  /* Fast-loading gradient fallback that shows immediately */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  /* Image loads on top of the gradient */
+  background-image: url('/start-screen.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+/* Mobile-specific background override for end screen */
+@media (max-width: 640px) {
+  .end-screen {
+    background-image: url('/start-screen-mobile.png');
+    background-position: center top;
+  }
 }

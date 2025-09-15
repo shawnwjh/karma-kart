@@ -10,6 +10,7 @@ import type { PickupExt, GameState } from '../types/gameTypes';
 type Props = {
   track: TrackData;
   username?: string;
+  avatarUrl?: string | null;
   onRunEnd?: (result: { 
     up: number; 
     down: number; 
@@ -34,9 +35,12 @@ async function fetchRedditAvatar(username: string): Promise<string | null> {
   }
 }
 
-export function RaceCanvas({ track, username, onRunEnd }: Props) {
+export function RaceCanvas({ track, username, avatarUrl, onRunEnd }: Props) {
   const cvsRef = useRef<HTMLCanvasElement>(null);
   const [avatarImage, setAvatarImage] = useState<HTMLImageElement | null>(null);
+  const [upvoteImage, setUpvoteImage] = useState<HTMLImageElement | null>(null);
+  const [downvoteImage, setDownvoteImage] = useState<HTMLImageElement | null>(null);
+  const [grassImage, setGrassImage] = useState<HTMLImageElement | null>(null);
   const [canvasSize, setCanvasSize] = useState({ width: 640, height: 480 });
 
   // Update canvas size to fill viewport
@@ -53,20 +57,56 @@ export function RaceCanvas({ track, username, onRunEnd }: Props) {
     return () => window.removeEventListener('resize', updateSize);
   }, []);
 
-  // Load Reddit avatar when username changes
+  // Load default snoo immediately, then upgrade to user avatar
   useEffect(() => {
-    if (!username) return;
-    
-    fetchRedditAvatar(username).then(avatarUrl => {
-      if (avatarUrl) {
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = () => setAvatarImage(img);
-        img.onerror = () => setAvatarImage(null);
-        img.src = avatarUrl;
-      }
-    });
-  }, [username]);
+    // Load default snoo avatar immediately (preloaded)
+    const defaultImg = new Image();
+    defaultImg.onload = () => setAvatarImage(defaultImg);
+    defaultImg.src = '/snoo.png';
+
+    // Then attempt to load user's avatar if available
+    if (avatarUrl) {
+      const userImg = new Image();
+      userImg.crossOrigin = 'anonymous';
+      userImg.onload = () => setAvatarImage(userImg); // Replace default with user avatar
+      userImg.onerror = () => {
+        // Keep the default snoo if user avatar fails to load
+        console.warn('Failed to load user avatar, keeping default snoo');
+      };
+      userImg.src = avatarUrl;
+    } else if (username && username !== 'anonymous') {
+      // Fallback: try to fetch avatar if not preloaded
+      fetchRedditAvatar(username).then(fetchedAvatarUrl => {
+        if (fetchedAvatarUrl) {
+          const userImg = new Image();
+          userImg.crossOrigin = 'anonymous';
+          userImg.onload = () => setAvatarImage(userImg);
+          userImg.onerror = () => {
+            console.warn('Failed to load fetched avatar, keeping default snoo');
+          };
+          userImg.src = fetchedAvatarUrl;
+        }
+      });
+    }
+  }, [username, avatarUrl]);
+
+  // Load pickup images
+  useEffect(() => {
+    // Load upvote image
+    const upImg = new Image();
+    upImg.onload = () => setUpvoteImage(upImg);
+    upImg.src = '/upvote.png';
+
+    // Load downvote image
+    const downImg = new Image();
+    downImg.onload = () => setDownvoteImage(downImg);
+    downImg.src = '/downvote.png';
+
+    // Load grass background image
+    const grassImg = new Image();
+    grassImg.onload = () => setGrassImage(grassImg);
+    grassImg.src = '/grass.png';
+  }, []);
 
   // game state in refs (avoid React re-renders)
   const stateRef = useRef<GameState>({
@@ -189,7 +229,11 @@ export function RaceCanvas({ track, username, onRunEnd }: Props) {
     const W = canvasSize.width, H = canvasSize.height;
     cvs.width = W;
     cvs.height = H;
-    const map = makeWorldToCanvas(track.center, W, H);
+    
+    // Use larger padding to ensure track stays within viewport
+    // Especially important on mobile devices
+    const padding = Math.min(W, H) * 0.1; // 10% of smaller dimension
+    const map = makeWorldToCanvas(track.center, W, H, padding);
 
     // prebuild road polygon (for draw)
     const left: Vec2[] = [], right: Vec2[] = [];
@@ -213,6 +257,39 @@ export function RaceCanvas({ track, username, onRunEnd }: Props) {
     const WALL_PUSH = 0.6;             // snap back toward edge when far outside
 
     let raf = 0;
+
+    const drawBackground = () => {
+      if (grassImage) {
+        // Create a scaled-down version of the grass image for tiling
+        const scale = 0.5; // Make grass appear smaller (zoom out effect)
+        const scaledWidth = grassImage.width * scale;
+        const scaledHeight = grassImage.height * scale;
+        
+        // Create a temporary canvas for the scaled grass
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = scaledWidth;
+        tempCanvas.height = scaledHeight;
+        const tempCtx = tempCanvas.getContext('2d')!;
+        
+        // Draw the scaled grass image
+        tempCtx.drawImage(grassImage, 0, 0, scaledWidth, scaledHeight);
+        
+        // Create a repeating pattern with the scaled grass image
+        const pattern = ctx.createPattern(tempCanvas, 'repeat');
+        if (pattern) {
+          ctx.fillStyle = pattern;
+          ctx.fillRect(0, 0, W, H);
+        } else {
+          // Fallback to solid color if pattern creation fails
+          ctx.fillStyle = COLORS.bg;
+          ctx.fillRect(0, 0, W, H);
+        }
+      } else {
+        // Fallback to solid color while grass image loads
+        ctx.fillStyle = COLORS.bg;
+        ctx.fillRect(0, 0, W, H);
+      }
+    };
 
     const drawRoad = () => {
       ctx.lineJoin = 'round'; ctx.lineCap = 'round';
@@ -255,19 +332,34 @@ export function RaceCanvas({ track, username, onRunEnd }: Props) {
         if (pickup.taken) continue;
         
         const mappedPos = map(pickup.p);
-        const radius = PICKUP.RADIUS;
+        const size = PICKUP.IMAGE_SIZE; // Use consistent image size
         
-        ctx.fillStyle = pickup.kind === 'up' ? COLORS.up : COLORS.down;
-        ctx.beginPath();
-        ctx.arc(mappedPos.x, mappedPos.y, radius, 0, Math.PI * 2);
-        ctx.fill();
+        // Choose the appropriate image
+        const image = pickup.kind === 'up' ? upvoteImage : downvoteImage;
         
-        // Draw arrow symbol
-        ctx.fillStyle = 'white';
-        ctx.font = '12px system-ui';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(pickup.kind === 'up' ? '↑' : '↓', mappedPos.x, mappedPos.y);
+        if (image) {
+          // Draw the pickup image centered on the position
+          ctx.drawImage(
+            image,
+            mappedPos.x - size / 2,
+            mappedPos.y - size / 2,
+            size,
+            size
+          );
+        } else {
+          // Fallback to old style if images haven't loaded yet
+          ctx.fillStyle = pickup.kind === 'up' ? COLORS.up : COLORS.down;
+          ctx.beginPath();
+          ctx.arc(mappedPos.x, mappedPos.y, PICKUP.RADIUS, 0, Math.PI * 2);
+          ctx.fill();
+          
+          // Draw arrow symbol
+          ctx.fillStyle = 'white';
+          ctx.font = '12px system-ui';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(pickup.kind === 'up' ? '↑' : '↓', mappedPos.x, mappedPos.y);
+        }
       }
     };
 
@@ -504,7 +596,7 @@ export function RaceCanvas({ track, username, onRunEnd }: Props) {
       }
 
       // ----- draw -----
-      ctx.clearRect(0,0,W,H);
+      drawBackground();
       drawRoad();
       drawFinishLine();
       drawPickups();
@@ -516,7 +608,7 @@ export function RaceCanvas({ track, username, onRunEnd }: Props) {
 
     raf = requestAnimationFrame(loop);
     return ()=> cancelAnimationFrame(raf);
-  }, [track, canvasSize, avatarImage, onRunEnd]);
+  }, [track, canvasSize, avatarImage, grassImage, onRunEnd]);
 
   return (
     <canvas

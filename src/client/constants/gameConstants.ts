@@ -26,12 +26,23 @@ export const PHYSICS = {
 };
 
 export const CAR = {
-  LEN: 28,               // made even bigger for profile picture
-  HALF_W: 18,            // increased proportionally
+  LEN: 34,               // made even bigger for profile picture
+  HALF_W: 28,            // increased proportionally
 };
 
 export const PICKUP = {
-  RADIUS: 3.2,
+  RADIUS: 3.2,           // collision detection radius
+  IMAGE_SIZE: 16,        // size for rendering pickup images (pixels)
+};
+
+export const TRACK = {
+  BASE_WIDTH: 50,        // increased from 35 for wider track
+  WIDTH_AMP: 10,         // increased from 8 for more width variation
+  RADIUS: 220,           // slightly increased from 200 for smoother curves
+  SPACING: 2,            // tighter spacing for smoother curves (from 3)
+  CONTROL_POINTS: 8,     // fewer control points for smoother track (from 16-23)
+  JITTER: 0.1,           // less angular jitter for smoother curves (from 0.3)
+  RADIUS_VARIATION: 0.2, // less radius variation for consistent curves (from 0.4)
 };
 
 export const CANVAS = {
@@ -41,7 +52,7 @@ export const CANVAS = {
 };
 
 export const GAME = {
-  TIMER_MS: 60_000,
+  TIMER_MS: 30_000,
   SEARCH_WINDOW: 40,
   FINISH_LINE_WIDTH: 4,
   FINISH_LINE_PROGRESS_THRESHOLD: 0.95, // Must complete 95% of track to cross finish line

@@ -1,6 +1,6 @@
 import type { Vec2, TrackData } from '../../shared/track/types';
 
-export type GameScreen = 'start' | 'playing' | 'end';
+export type GameScreen = 'start' | 'rules' | 'playing' | 'end';
 
 export type PickupExt = { 
   id: number; 
