@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import type { TrackData, Vec2 } from '../../shared/track/types';
-import { COLORS, PHYSICS, CAR, PICKUP, GAME } from '../constants/gameConstants';
+import { COLORS, PHYSICS, CAR, PICKUP, GAME } from '../constants';
 import { 
   v, add, sub, mul, len, clamp, 
   makeWorldToCanvas, nearestIndex, signedOffsetFromCenter 
-} from '../utils/gameUtils';
-import type { PickupExt, GameState } from '../types/gameTypes';
+} from '../utils';
+import type { PickupExt, GameState } from '../types';
 
 type Props = {
   track: TrackData;
@@ -19,7 +19,6 @@ type Props = {
   }) => void;
 };
 
-// Function to fetch Reddit user avatar via our server
 async function fetchRedditAvatar(username: string): Promise<string | null> {
   try {
     const response = await fetch(`/api/avatar/${username}`);
@@ -43,7 +42,7 @@ export function RaceCanvas({ track, username, avatarUrl, onRunEnd }: Props) {
   const [grassImage, setGrassImage] = useState<HTMLImageElement | null>(null);
   const [canvasSize, setCanvasSize] = useState({ width: 640, height: 480 });
 
-  // Update canvas size to fill viewport
+  // Canvas sizing
   useEffect(() => {
     const updateSize = () => {
       setCanvasSize({
@@ -57,25 +56,21 @@ export function RaceCanvas({ track, username, avatarUrl, onRunEnd }: Props) {
     return () => window.removeEventListener('resize', updateSize);
   }, []);
 
-  // Load default snoo immediately, then upgrade to user avatar
+  // Avatar loading
   useEffect(() => {
-    // Load default snoo avatar immediately (preloaded)
     const defaultImg = new Image();
     defaultImg.onload = () => setAvatarImage(defaultImg);
     defaultImg.src = '/snoo.png';
 
-    // Then attempt to load user's avatar if available
     if (avatarUrl) {
       const userImg = new Image();
       userImg.crossOrigin = 'anonymous';
-      userImg.onload = () => setAvatarImage(userImg); // Replace default with user avatar
+      userImg.onload = () => setAvatarImage(userImg);
       userImg.onerror = () => {
-        // Keep the default snoo if user avatar fails to load
         console.warn('Failed to load user avatar, keeping default snoo');
       };
       userImg.src = avatarUrl;
     } else if (username && username !== 'anonymous') {
-      // Fallback: try to fetch avatar if not preloaded
       fetchRedditAvatar(username).then(fetchedAvatarUrl => {
         if (fetchedAvatarUrl) {
           const userImg = new Image();
@@ -90,25 +85,22 @@ export function RaceCanvas({ track, username, avatarUrl, onRunEnd }: Props) {
     }
   }, [username, avatarUrl]);
 
-  // Load pickup images
+  // Image loading
   useEffect(() => {
-    // Load upvote image
     const upImg = new Image();
     upImg.onload = () => setUpvoteImage(upImg);
     upImg.src = '/upvote.png';
 
-    // Load downvote image
     const downImg = new Image();
     downImg.onload = () => setDownvoteImage(downImg);
     downImg.src = '/downvote.png';
 
-    // Load grass background image
     const grassImg = new Image();
     grassImg.onload = () => setGrassImage(grassImg);
     grassImg.src = '/grass.png';
   }, []);
 
-  // game state in refs (avoid React re-renders)
+  // Game state refs
   const stateRef = useRef<GameState>({
     pos: {...(track.center[0] || { x: 0, y: 0 })},
     heading: track.center[0] && track.center[1] ? Math.atan2(
@@ -164,7 +156,6 @@ export function RaceCanvas({ track, username, avatarUrl, onRunEnd }: Props) {
   }, [track]);
   
   useEffect(() => {
-    // Initialize pickups from track data
     const newPickups: PickupExt[] = [];
     
     if (track.pickups) {
@@ -182,7 +173,7 @@ export function RaceCanvas({ track, username, avatarUrl, onRunEnd }: Props) {
     pickupsRef.current = newPickups;
   }, [track]);
 
-  // keyboard + touch input
+  // Input handling
   useEffect(()=>{
     const s = stateRef.current;
     const onKey = (e:KeyboardEvent, down:boolean)=>{
@@ -194,12 +185,11 @@ export function RaceCanvas({ track, username, avatarUrl, onRunEnd }: Props) {
     window.addEventListener('keydown', kd);
     window.addEventListener('keyup', ku);
 
-    // simple touch zones: left half = left, right half = right
+    // Touch zones: left half = left, right half = right
     const onTouch = (e:TouchEvent)=>{
       const rect = cvsRef.current?.getBoundingClientRect();
       if (!rect) return;
       const mid = rect.left + rect.width/2;
-      // reset
       s.keys.left = s.keys.right = false;
       for (let i=0;i<e.touches.length;i++){
         const t = e.touches.item(i)!;
@@ -491,15 +481,25 @@ export function RaceCanvas({ track, username, avatarUrl, onRunEnd }: Props) {
     };
 
     const checkFinishLineCrossing = (state: GameState) => {
-      // Calculate track progress based on position along the track
+      // Store previous track progress for crossing detection
+      const prevProgress = state.trackProgress;
+      
+      // Calculate current track progress based on position along the track
       state.trackProgress = state.idxHint / track.center.length;
       
-      // Check if we've crossed the finish line (back to start after significant progress)
-      if (state.trackProgress < 0.15 && state.trackProgress > 0 && 
-          Date.now() - state.lastFinishLineTime > 8000) { // 8 second cooldown for wider track
-        
-        // Only count as lap completion if we've made significant progress around track
-        if (state.distance > track.center.length * 3 * 0.7) { // 70% of track length
+      // Check if we've crossed the finish line by detecting the wrap-around
+      // This handles high-speed crossings where we might jump from 0.9+ to 0.1-
+      const crossedFinishLine = (
+        prevProgress > 0.8 && state.trackProgress < 0.2 && // Wrapped around from end to start
+        Date.now() - state.lastFinishLineTime > 3000 // 3 second cooldown (reduced for faster detection)
+      ) || (
+        state.trackProgress < 0.05 && prevProgress > 0.05 && // Alternative detection for very close crossings
+        Date.now() - state.lastFinishLineTime > 3000
+      );
+      
+      if (crossedFinishLine) {
+        // Only count as lap completion if we've made reasonable progress
+        if (state.distance > track.center.length * 3 * 0.5) { // Reduced from 70% to 50% for easier completion
           state.laps++;
           state.lastFinishLineTime = Date.now();
           
@@ -509,7 +509,7 @@ export function RaceCanvas({ track, username, avatarUrl, onRunEnd }: Props) {
             pickup.taken = false;
           }
           
-          console.log(`Lap ${state.laps} completed! Pickups respawned.`);
+          console.log(`Lap ${state.laps} completed at high speed! Pickups respawned. Progress: ${prevProgress.toFixed(3)} -> ${state.trackProgress.toFixed(3)}`);
         }
       }
     };

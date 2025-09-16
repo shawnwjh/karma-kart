@@ -12,7 +12,7 @@ export const COLORS = {
 export const PHYSICS = {
   ACCEL: 32,              // forward thrust
   DRAG: 12,               // baseline drag
-  MAX_V: 85,              // top speed
+  MAX_V: 200,             // top speed (increased from 85)
   STEER: 2.8,             // rad/s at full lock
   OFFROAD_SLOW: 0.25,     // stronger penalty when off-road (was 0.55)
 

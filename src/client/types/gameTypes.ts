@@ -1,6 +1,15 @@
 import type { Vec2, TrackData } from '../../shared/track/types';
 
-export type GameScreen = 'start' | 'rules' | 'playing' | 'end';
+export type GameScreen = 'start' | 'factions' | 'rules' | 'playing' | 'end';
+
+export type Faction = {
+  id: string;
+  name: string;
+  color: string;
+  emoji: string;
+  description: string;
+  totalKarma: number;
+};
 
 export type PickupExt = { 
   id: number; 
@@ -26,7 +35,7 @@ export type GameState = {
   wallSign: -1 | 0 | 1;
   relaunchBoostMs: number;
   laps: number;
-  trackProgress: number; // 0 to 1, how far around the track
+  trackProgress: number;
   lastFinishLineTime: number;
 };
 
