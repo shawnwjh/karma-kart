@@ -67,84 +67,11 @@ html, body, #root {
     padding: 1rem;
   }
   
-  /* Make logo smaller on mobile */
-  .start-screen img {
-    width: 4rem !important;
-  }
-  
-  /* Make title smaller on mobile */
-  .start-screen .racing-title {
-    font-size: 2rem !important;
-    margin-bottom: 1rem !important;
-  }
-  
-  /* Make subtitle smaller on mobile */
-  .start-screen .racing-subtitle {
-    font-size: 0.8rem !important;
-    margin-bottom: 1.5rem !important;
-  }
-  
-  /* Make button smaller on mobile */
-  .start-screen button {
-    font-size: 1.3rem !important;
-    padding: 0.75rem 2rem !important;
-  }
-  
-  /* Rules screen mobile adjustments */
-  .start-screen .racing-text {
-    font-size: 1rem !important;
-    max-width: 90vw !important;
-    margin-bottom: 1.5rem !important;
-    line-height: 1.6 !important;
-  }
-  
   /* End screen mobile adjustments */
   .end-screen {
     background-image: url('/start-screen-mobile.png');
     background-position: center top;
     padding: 1rem;
-  }
-  
-  /* Make end screen title smaller on mobile */
-  .end-screen .racing-title {
-    font-size: 2rem !important;
-    margin-bottom: 1rem !important;
-  }
-  
-  /* Make end screen text smaller on mobile */
-  .end-screen .racing-text {
-    font-size: 1.2rem !important;
-    margin-bottom: 2rem !important;
-    line-height: 1.4 !important;
-  }
-  
-  /* Make end screen button smaller on mobile */
-  .end-screen button {
-    font-size: 1.3rem !important;
-    padding: 0.75rem 1.5rem !important;
-  }
-  
-  /* Faction selection mobile adjustments */
-  .start-screen div[style*="grid"] {
-    grid-template-columns: 1fr !important;
-    gap: 0.75rem !important;
-  }
-  
-  .start-screen div[style*="grid"] button {
-    padding: 1rem !important;
-    font-size: 0.9rem !important;
-  }
-  
-  .start-screen div[style*="grid"] button div:first-child {
-    font-size: 1.5rem !important;
-  }
-  
-  .start-screen div[style*="grid"] button div:nth-child(2) {
-    font-size: 1rem !important;
-  }
-  
-  .start-screen div[style*="grid"] button div:nth-child(3) {
-    font-size: 0.8rem !important;
   }
 }
 

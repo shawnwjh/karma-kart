@@ -20,6 +20,7 @@ export default function App() {
     { id: 'green', name: 'Green Team', color: '#44ff44', emoji: '/karma-kart-green.png', description: 'Team Green', totalKarma: 0 },
     { id: 'yellow', name: 'Yellow Team', color: '#ffff44', emoji: '/karma-kart-yellow.png', description: 'Team Yellow', totalKarma: 0 }
   ]);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
 
   // Game track
   const track = generateTrack('karma-kart-dev', {
@@ -100,6 +101,22 @@ export default function App() {
       const img = new Image();
       img.src = logoSrc;
     });
+  }, []);
+
+  // Handle mobile detection with window resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 640);
+    };
+
+    // Initial check
+    checkMobile();
+
+    // Add resize listener
+    window.addEventListener('resize', checkMobile);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   // Event handlers
@@ -194,7 +211,7 @@ export default function App() {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        color: 'white' // Ensure text is visible
+        color: 'white'
       }}>
         <div style={{
           display: 'flex',
@@ -203,19 +220,21 @@ export default function App() {
           justifyContent: 'center',
           marginBottom: '2rem'
         }}>
-          <h1 className="racing-title" style={{ fontSize: '1rem', textShadow: '4px 4px 8px rgba(0,0,0,0.8)' }}>
+          <img src="/karma-kart-clear.png" style={{width: isMobile ? '3rem' : '4rem', marginRight: '1rem'}} />
+          <h1 className="racing-title" style={{ fontSize: isMobile ? '2rem' : '3rem', textShadow: '4px 4px 8px rgba(0,0,0,0.8)' }}>
             Karma Kart
           </h1>
         </div>
         
         <div style={{
-          padding: '1.5rem',
+          padding: isMobile ? '0.5rem' : '1.5rem',
           width: '100%',
+          maxWidth: isMobile ? '100%' : '800px'
         }}>
           <div style={{ 
             display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', 
-            gap: '0.75rem'
+            gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(120px, 1fr))', 
+            gap: isMobile ? '0.25rem' : '0.75rem'
           }}>
             {factions
               .sort((a, b) => b.totalKarma - a.totalKarma)
@@ -223,7 +242,7 @@ export default function App() {
                 <div
                   key={faction.id}
                   style={{
-                    padding: '0.75rem',
+                    padding: isMobile ? '0.25rem' : '0.75rem',
                     background: selectedFaction === faction.id 
                       ? `linear-gradient(135deg, ${faction.color}33, ${faction.color}55)`
                       : 'rgba(0,0,0,0.8)',
@@ -243,9 +262,9 @@ export default function App() {
                       background: '#FFD700',
                       color: '#000',
                       borderRadius: '50%',
-                      width: '20px',
-                      height: '20px',
-                      fontSize: '12px',
+                      width: isMobile ? '16px' : '20px',
+                      height: isMobile ? '16px' : '20px',
+                      fontSize: isMobile ? '10px' : '12px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -262,9 +281,9 @@ export default function App() {
                       background: '#C0C0C0',
                       color: '#000',
                       borderRadius: '50%',
-                      width: '20px',
-                      height: '20px',
-                      fontSize: '12px',
+                      width: isMobile ? '16px' : '20px',
+                      height: isMobile ? '16px' : '20px',
+                      fontSize: isMobile ? '10px' : '12px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -281,9 +300,9 @@ export default function App() {
                       background: '#CD7F32',
                       color: '#000',
                       borderRadius: '50%',
-                      width: '20px',
-                      height: '20px',
-                      fontSize: '12px',
+                      width: isMobile ? '16px' : '20px',
+                      height: isMobile ? '16px' : '20px',
+                      fontSize: isMobile ? '10px' : '12px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -300,9 +319,9 @@ export default function App() {
                       background: '#CD7F32',
                       color: '#000',
                       borderRadius: '50%',
-                      width: '20px',
-                      height: '20px',
-                      fontSize: '12px',
+                      width: isMobile ? '16px' : '20px',
+                      height: isMobile ? '16px' : '20px',
+                      fontSize: isMobile ? '10px' : '12px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -311,19 +330,19 @@ export default function App() {
                       4
                     </div>
                   )}
-                  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.25rem' }}>
-                    <img src={faction.emoji} alt={faction.name} style={{ width: '6rem' }} />
+                  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: isMobile ? '0.125rem' : '0.25rem' }}>
+                    <img src={faction.emoji} alt={faction.name} style={{ width: isMobile ? '2.5rem' : '6rem' }} />
                   </div>
                   <div style={{ 
-                    fontSize: '0.9rem', 
+                    fontSize: isMobile ? '0.65rem' : '0.9rem', 
                     fontWeight: 'bold', 
                     color: faction.color,
-                    marginBottom: '0.25rem'
+                    marginBottom: isMobile ? '0.125rem' : '0.25rem'
                   }}>
                     {faction.name}
                   </div>
                   <div style={{ 
-                    fontSize: '0.8rem', 
+                    fontSize: isMobile ? '0.6rem' : '0.8rem', 
                     color: '#fff',
                     fontWeight: 'bold'
                   }}>
@@ -337,7 +356,7 @@ export default function App() {
         {/* User's Team and Contribution - Bottom of Screen */}
         {userFactionData ? (
           <div style={{
-            padding: '1rem 2rem',
+            padding: isMobile ? '0.75rem 1rem' : '1rem 2rem',
             background: `linear-gradient(135deg, ${userFactionData.color}22, ${userFactionData.color}44)`,
             borderRadius: '15px',
             border: `2px solid ${userFactionData.color}`,
@@ -345,7 +364,7 @@ export default function App() {
             marginBottom: '1rem'
           }}>
             <p style={{ 
-              fontSize: '1.2rem', 
+              fontSize: isMobile ? '1rem' : '1.2rem', 
               margin: '0 0 0.5rem 0', 
               color: userFactionData.color,
               fontWeight: 'bold',
@@ -354,11 +373,11 @@ export default function App() {
               justifyContent: 'center',
               gap: '0.5rem'
             }}>
-              <img src={userFactionData.emoji} alt={userFactionData.name} style={{ width: '24px', height: '24px' }} />
+              <img src={userFactionData.emoji} alt={userFactionData.name} style={{ width: isMobile ? '20px' : '24px', height: isMobile ? '20px' : '24px' }} />
               Your Team: {userFactionData.name}
             </p>
             <p style={{ 
-              fontSize: '1rem', 
+              fontSize: isMobile ? '0.9rem' : '1rem', 
               margin: 0, 
               color: '#fff'
             }}>
@@ -368,14 +387,14 @@ export default function App() {
         ) : (
           <div style={{
             marginTop: '2rem',
-            padding: '1rem 2rem',
+            padding: isMobile ? '0.75rem 1rem' : '1rem 2rem',
             background: 'rgba(0,0,0,0.8)',
             borderRadius: '15px',
             border: '2px solid rgba(255,255,255,0.2)',
             textAlign: 'center'
           }}>
             <p style={{ 
-              fontSize: '1.2rem', 
+              fontSize: isMobile ? '1rem' : '1.2rem', 
               margin: '0 0 0.5rem 0', 
               color: '#fff',
               fontWeight: 'bold'
@@ -383,7 +402,7 @@ export default function App() {
               Your Team: No Team
             </p>
             <p style={{ 
-              fontSize: '1rem', 
+              fontSize: isMobile ? '0.9rem' : '1rem', 
               margin: 0, 
               color: '#fff'
             }}>
@@ -392,7 +411,7 @@ export default function App() {
           </div>
         )}
 
-        <p className="racing-subtitle" style={{ fontSize: '1rem', marginBottom: '1rem', textShadow: '2px 2px 4px rgba(0,0,0,0.7)' }}>
+        <p className="racing-subtitle" style={{ fontSize: isMobile ? '0.9rem' : '1rem', marginBottom: '1rem', textShadow: '2px 2px 4px rgba(0,0,0,0.7)' }}>
           Welcome, {username}!
         </p>
         
@@ -400,8 +419,8 @@ export default function App() {
           className="racing-subtitle"
           onClick={handleStartGame}
           style={{
-            fontSize: '1.8rem',
-            padding: '1rem 3rem',
+            fontSize: isMobile ? '1.4rem' : '1.8rem',
+            padding: isMobile ? '0.75rem 2rem' : '1rem 3rem',
             background: '#ff5700',
             border: 'none',
             borderRadius: '50px',

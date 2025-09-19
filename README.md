@@ -8,7 +8,7 @@ A Reddit daily racing game where the community competes in teams for the highest
 - **Daily Track:** Each day generates a unique race track based on the subreddit seed.
 - **Reddit Avatars:** Your car is your Reddit profile picture (Snoovatar).
 - **Upvotes & Downvotes:** Collect upvotes for points, avoid downvotes!
-- **Timer:** Each race lasts 1 minute. Try to collect as many upvotes as possible before time runs out.
+- **Timer:** Each race lasts 30 seconds. Try to collect as many upvotes as possible before time runs out.
 - **Finish Line:** Cross the finish line to respawn pickups and keep racing for more points.
 - **Teams:** Compete as part of your subreddit team for daily glory.
 - **No Pausing:** Once the timer starts, you can't stop!
